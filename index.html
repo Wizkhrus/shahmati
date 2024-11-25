@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,8 @@
     <style>
         body {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             background: #f0f0f0;
             margin: 0;
@@ -19,7 +18,6 @@
             grid-template-columns: repeat(8, 60px);
             grid-template-rows: repeat(8, 60px);
             gap: 1px;
-            margin-bottom: 20px;
         }
         .square {
             width: 60px;
@@ -35,53 +33,42 @@
         .black {
             background: #769656;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: #769656;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #5a7848;
-        }
     </style>
 </head>
 <body>
     <div class="board" id="board"></div>
-    <button id="start-game-btn">Начать игру</button>
+    <button id="start-game">Начать игру</button>
+
     <script>
         const board = document.getElementById('board');
-        const startGameBtn = document.getElementById('start-game-btn');
-        let gameState = ""; // Состояние доски будет приходить с сервера
 
-        // Рендер доски
-        function renderBoard(state) {
+        function fenToBoard(fen) {
+            const rows = fen.split(' ')[0].split('/');
+            let boardArray = [];
+            for (let row of rows) {
+                let expandedRow = '';
+                for (let char of row) {
+                    if (!isNaN(char)) {
+                        expandedRow += '.'.repeat(Number(char));
+                    } else {
+                        expandedRow += char;
+                    }
+                }
+                boardArray.push(...expandedRow);
+            }
+            return boardArray;
+        }
+
+        function renderBoard(boardArray) {
             board.innerHTML = '';
             for (let i = 0; i < 64; i++) {
                 const square = document.createElement('div');
                 square.className = `square ${(Math.floor(i / 8) + i) % 2 === 0 ? 'white' : 'black'}`;
-                square.textContent = state[i] !== '.' ? state[i] : '';
+                square.textContent = boardArray[i] !== '.' ? boardArray[i] : '';
                 board.appendChild(square);
             }
         }
 
-        // Запрос на сервер для старта игры
-        startGameBtn.addEventListener('click', async () => {
+        document.getElementById('start-game').addEventListener('click', async () => {
             try {
-                const response = await fetch('http://localhost:5000/start_game', { method: 'POST' });
-                const data = await response.json();
-                gameState = data.board; // Получаем состояние доски от сервера
-                renderBoard(gameState);
-            } catch (error) {
-                console.error('Ошибка при запуске игры:', error);
-            }
-        });
-
-        // Рендер изначальной доски
-        renderBoard("rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR");
-    </script>
-</body>
-</html>
+                const r

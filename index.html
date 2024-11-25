@@ -71,4 +71,14 @@
 
         document.getElementById('start-game').addEventListener('click', async () => {
             try {
-                const r
+                const response = await fetch('http://127.0.0.1:5000/start_game', { method: 'POST' });
+                const data = await response.json();
+                const boardArray = fenToBoard(data.board);
+                renderBoard(boardArray);
+            } catch (error) {
+                console.error('Ошибка при запуске игры:', error);
+            }
+        });
+    </script>
+</body>
+</html>
